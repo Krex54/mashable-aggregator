@@ -1,29 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
-import time
-
-def extract_date_from_article(url):
-    try:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        response = requests.get(url, headers=headers)
-        article_soup = BeautifulSoup(response.text, "html.parser")
-
-        time_tag = article_soup.find("time")
-        if time_tag and time_tag.has_attr("datetime"):
-            date_str = time_tag["datetime"].split("T")[0]
-            return datetime.strptime(date_str, "%Y-%m-%d")
-        else:
-            time_tag = article_soup.find("time", class_="datepublished")
-            if time_tag:
-                try:
-                    return datetime.strptime(time_tag.text.strip(), "%B %d, %Y")
-                except:
-                    pass
-    except Exception as e:
-        print(f"Error extracting date from {url}: {e}")
-    return None
-
 def scrape_mashable():
     url = "https://sea.mashable.com/"
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -32,10 +6,14 @@ def scrape_mashable():
 
     headlines = []
     seen_titles = set()
+    MAX_ARTICLES = 10  # 👈 You can increase this later when it's stable
 
-    #Grab box_title articles
+    # Grab box_title articles
     box_links = soup.find_all("a", class_="box_title")
     for link_tag in box_links:
+        if len(headlines) >= MAX_ARTICLES:
+            break  # ✅ Stop scraping to prevent timeouts
+
         title = link_tag.get_text(strip=True)
         if title in seen_titles:
             continue
@@ -55,9 +33,12 @@ def scrape_mashable():
 
         time.sleep(1)
 
-    #Grab articles with caption/deck and inline time tag
+    # Grab articles with caption/deck and inline time tag
     all_a_tags = soup.find_all("a")
     for a_tag in all_a_tags:
+        if len(headlines) >= MAX_ARTICLES:
+            break  # ✅ Again, avoid long scraping
+
         caption_div = a_tag.find("div", class_="caption")
         time_tag = a_tag.find("time", class_="datepublished")
         if caption_div and time_tag:
@@ -83,6 +64,6 @@ def scrape_mashable():
 
             time.sleep(1)
 
-    #Sort, treating missing dates as oldest
+    # Sort articles by date, with missing dates at the bottom
     headlines.sort(key=lambda x: x["date"] or datetime.min, reverse=True)
     return headlines
