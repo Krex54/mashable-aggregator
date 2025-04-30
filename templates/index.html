@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mashable Titles</title>
+    <style>
+        body { background: white; color: black; font-family: Arial, sans-serif; }
+        a { color: black; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Articles from Mashable SEA (2022 Onward)</h1>
+    <ul>
+        {% for article in articles %}
+        <li>
+            <a href="{{ article.link }}" target="_blank">{{ article.title }}</a>
+            {% if article.date %}
+              - {{ article.date.strftime('%Y-%m-%d') }}
+            {% else %}
+              - <em>(Date not found)</em>
+            {% endif %}
+        </li>  
+        {% endfor %}
+    </ul>
+</body>
+</html>
