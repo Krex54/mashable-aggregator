@@ -32,7 +32,7 @@ def scrape_mashable():
 
     headlines = []
     seen_titles = set()
-    MAX_ARTICLES = 10  # 👈 You can increase this later when it's stable
+    MAX_ARTICLES = 100
 
     # Grab box_title articles
     box_links = soup.find_all("a", class_="box_title")
