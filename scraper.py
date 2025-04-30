@@ -80,8 +80,6 @@ def scrape_mashable():
                     "link": link,
                     "date": pub_date
                 })
-            
-            time.sleep(1)
 
     #Sort, treating missing dates as oldest
     headlines.sort(key=lambda x: x["date"] or datetime.min, reverse=True)
