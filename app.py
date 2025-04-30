@@ -3,10 +3,10 @@ from scraper import scrape_mashable
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route("/")
 def home():
     articles = scrape_mashable()
-    return render_template('index.html', articles=articles)
+    return render_template("index.html", articles=articles)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
